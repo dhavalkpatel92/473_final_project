@@ -1,0 +1,37 @@
+{
+  "users": [
+    {
+      "name": "Jane Doe",
+      "email": "j@j.com",
+      "password": "jjj",
+      "bio": "A grad Student"
+    },
+    {
+      "name": "Justin Doe",
+      "email": "d@d.com",
+      "password": "ddd",
+      "bio": "A grad Student"
+    }
+  ],
+  "tweets": [
+    {
+      "id": "1",
+      "name": "qweqwewqeqweqwew",
+      "posted time": "Thu Mar 29 2012 17:00:00 GMT-0700 ",
+      "votes": 2,
+      "votes_users": [
+        "d@d.com",
+        "j@j.com"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "qweqwewqeqweqwew",
+      "posted time": "Thu Mar 29 2012 17:00:00 GMT-0700 ",
+      "votes": 1,
+      "votes_users": [
+        "j@j.com"
+      ]
+    }
+  ]
+}

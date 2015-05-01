@@ -1,0 +1,80 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', 'socket-io' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.35
+4 verbose cache add [ 'socket-io', null ]
+5 verbose cache add name=undefined spec="socket-io" args=["socket-io",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'socket-io',
+6 verbose parsed url   path: 'socket-io',
+6 verbose parsed url   href: 'socket-io' }
+7 silly lockFile 2c2f14e9-socket-io socket-io
+8 verbose lock socket-io /Users/tejaspatel/.npm/2c2f14e9-socket-io.lock
+9 silly lockFile 2c2f14e9-socket-io socket-io
+10 silly lockFile 2c2f14e9-socket-io socket-io
+11 verbose addNamed [ 'socket-io', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile d2f5c91d-socket-io socket-io@
+14 verbose lock socket-io@ /Users/tejaspatel/.npm/d2f5c91d-socket-io.lock
+15 silly addNameRange { name: 'socket-io', range: '*', hasData: false }
+16 verbose request where is /socket-io
+17 verbose request registry https://registry.npmjs.org/
+18 verbose request id 344e447fce90cf62
+19 verbose url raw /socket-io
+20 verbose url resolving [ 'https://registry.npmjs.org/', './socket-io' ]
+21 verbose url resolved https://registry.npmjs.org/socket-io
+22 verbose request where is https://registry.npmjs.org/socket-io
+23 info trying registry request attempt 1 at 23:12:52
+24 http GET https://registry.npmjs.org/socket-io
+25 http 404 https://registry.npmjs.org/socket-io
+26 verbose headers { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+26 verbose headers   'content-type': 'application/json',
+26 verbose headers   'cache-control': 'max-age=0',
+26 verbose headers   'content-length': '51',
+26 verbose headers   'accept-ranges': 'bytes',
+26 verbose headers   date: 'Fri, 01 May 2015 06:12:47 GMT',
+26 verbose headers   via: '1.1 varnish',
+26 verbose headers   age: '0',
+26 verbose headers   connection: 'keep-alive',
+26 verbose headers   'x-served-by': 'cache-sjc3130-SJC',
+26 verbose headers   'x-cache': 'MISS',
+26 verbose headers   'x-cache-hits': '0',
+26 verbose headers   'x-timer': 'S1430460767.316536,VS0,VE91' }
+27 silly registry.get cb [ 404,
+27 silly registry.get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+27 silly registry.get     'content-type': 'application/json',
+27 silly registry.get     'cache-control': 'max-age=0',
+27 silly registry.get     'content-length': '51',
+27 silly registry.get     'accept-ranges': 'bytes',
+27 silly registry.get     date: 'Fri, 01 May 2015 06:12:47 GMT',
+27 silly registry.get     via: '1.1 varnish',
+27 silly registry.get     age: '0',
+27 silly registry.get     connection: 'keep-alive',
+27 silly registry.get     'x-served-by': 'cache-sjc3130-SJC',
+27 silly registry.get     'x-cache': 'MISS',
+27 silly registry.get     'x-cache-hits': '0',
+27 silly registry.get     'x-timer': 'S1430460767.316536,VS0,VE91' } ]
+28 silly lockFile d2f5c91d-socket-io socket-io@
+29 silly lockFile d2f5c91d-socket-io socket-io@
+30 error 404 404 Not Found: socket-io
+30 error 404
+30 error 404 'socket-io' is not in the npm registry.
+30 error 404 You should bug the author to publish it
+30 error 404
+30 error 404 Note that you can also install from a
+30 error 404 tarball, folder, or http url, or git url.
+31 error System Darwin 14.3.0
+32 error command "node" "/usr/local/bin/npm" "install" "socket-io"
+33 error cwd /Users/tejaspatel/Documents/CPSC_473/473_final_project
+34 error node -v v0.10.35
+35 error npm -v 1.4.28
+36 error code E404
+37 verbose exit [ 1, true ]
