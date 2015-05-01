@@ -120,23 +120,17 @@ app.post('/register', function(req, res) {
 
     });
 });
-app.post('/userinfo', function(req, res) {
+app.get('/userinfo', function(req, res) {
     sess = req.session;
+    if (sess.email) {
     collection.count(function(err, count) {
         if (err) console.log(err);
-        collection.find({
-            "email": req.body.email,
-            "password": req.body.pwd
-        }).toArray(function(err, item) {
+        collection.findOne({
+            "email": sess.email
+        },function(err, item) {
             if (err) console.log(err);
-            if (item.length == 1) {
-                sess = req.session;
-                sess.email = req.body.email;
-                res.send("success");
-            } else {
-                //collection.insert(req.body);
-                res.send("error");
-            }
+                res.send(item);
+            
         });
 
     });
@@ -154,5 +148,6 @@ app.post('/userinfo', function(req, res) {
 
     }
     */
+    }
 });
 app.listen(3000);
