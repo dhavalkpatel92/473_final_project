@@ -58,7 +58,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <header class="main-header">
 
         <!-- Logo -->
-        <a href="index2.html" class="logo"><b>Project</b>  2</a>
+        <a href="" class="logo"><b>Project</b>  2</a>
 
         <!-- Header Navbar -->
         <nav class="navbar navbar-static-top" role="navigation">
@@ -169,33 +169,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <span class="hidden-xs">Alexander Pierce</span>
                 </a>
                 <ul class="dropdown-menu">
-                  <!-- The user image in the menu -->
-                  <li class="user-header">
-                    <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
-                    <p>
-                      Alexander Pierce - Web Developer
-                      <small>Member since Nov. 2012</small>
-                    </p>
-                  </li>
-                  <!-- Menu Body -->
-                  <li class="user-body">
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Followers</a>
-                    </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Sales</a>
-                    </div>
-                    <div class="col-xs-4 text-center">
-                      <a href="#">Friends</a>
-                    </div>
-                  </li>
-                  <!-- Menu Footer-->
                   <li class="user-footer">
                     <div class="pull-left">
                       <a href="#" class="btn btn-default btn-flat">Profile</a>
                     </div>
                     <div class="pull-right">
-                      <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                      <a href="/logout" class="btn btn-default btn-flat">Sign out</a>
                     </div>
                   </li>
                 </ul>
@@ -237,7 +216,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <ul class="sidebar-menu">
             <li class="header">HEADER</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="#"><span>Link</span></a><</li>
+            <li class="active"><a href="#"><span>Link</span></a></li>
             <li><a href="#"><span>Another Link</span></a></li>
             <li class="treeview">
               <a href="#"><span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
@@ -280,7 +259,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           Anything you want
         </div>
         <!-- Default to the left --> 
-        <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2015 <a href="#">Company</a>.</strong> All rights reserved. <b><a href="https://github.com/almasaeed2010/AdminLTE" target="_blank">https://github.com/almasaeed2010/AdminLTE</a></b>
       </footer>
 
     </div><!-- ./wrapper -->
@@ -293,8 +272,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
     <!-- AdminLTE App -->
     <script src="dist/js/app.min.js" type="text/javascript"></script>
+    <script src="javascripts/client.js" type="text/javascript"></script>
     <script src="dist/js/jquery.noty.packaged.js" type="text/javascript"></script>
     <script type="text/javascript">
+    $(document).ready(function() {
+        function disableBack() { window.history.forward() }
+
+        window.onload = disableBack();
+        window.onpageshow = function(evt) { if (evt.persisted) disableBack() }
+    });
     </script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins. 
           Both of these plugins are recommended to enhance the 
