@@ -25,7 +25,7 @@ db.open(function(err, db) {
             "name": "Admin",
             "email": "admin@admin.com",
             "password": "admin",
-            "role": "admin"
+            "role": "professor"
         }, function(err, doc) {
             if (err) console.log("Already Created Admin");
 
@@ -129,25 +129,11 @@ app.get('/userinfo', function(req, res) {
             "email": sess.email
         },function(err, item) {
             if (err) console.log(err);
-                res.send(item);
+                res.json(item);
             
         });
 
     });
-    /*
-    for (var users in obj.users) {
-
-        var json_email = obj.users[users].email;
-        var sess_email = sess.email;
-        if (json_email === sess_email) {
-            result = "success";
-            console.log(obj.users[users]);
-            res.json(obj.users[users]);
-            break;
-        }
-
-    }
-    */
     }
 });
 app.listen(3000);
