@@ -3,6 +3,8 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 var Db = require('mongodb').Db,
     Server = require('mongodb').Server;
 
@@ -20,7 +22,7 @@ db.open(function(err, db) {
     if (err) console.log(err);
     db.createCollection('users', function(err) {
         if (err) console.log(err);
-        collection.insert({
+        users_collection.insert({
             "_id": "admin",
             "name": "Admin",
             "email": "admin@admin.com",
@@ -30,6 +32,9 @@ db.open(function(err, db) {
             if (err) console.log("Already Created Admin");
 
         });
+    });
+    db.createCollection('posts', function(err) {
+        if (err) console.log(err);
     });
 });
 
@@ -56,9 +61,9 @@ app.post('/login', function(req, res) {
 
     console.log('Admin side log');
     //var logincheck_result=logincheck(obj,req,result);
-    collection.count(function(err, count) {
+    users_collection.count(function(err, count) {
         if (err) console.log(err);
-        collection.find({
+        users_collection.find({
             "email": req.body.email,
             "password": req.body.pwd
         }).toArray(function(err, item) {
@@ -100,20 +105,21 @@ app.get('/register', function(req, res) {
     res.render("register.html");
 
 });
-var collection = db.collection('users');
+var users_collection = db.collection('users');
+var posts_collection =db.collection('posts');
 
 app.post('/register', function(req, res) {
 
-    collection.count(function(err, count) {
+    users_collection.count(function(err, count) {
         if (err) console.log(err);
-        collection.find({
+        users_collection.find({
             "email": req.body.email
         }).toArray(function(err, item) {
             if (err) console.log(err);
             if (item.length == 1) {
                 res.send("error");
             } else {
-                collection.insert(req.body);
+                users_collection.insert(req.body);
                 res.send("success");
             }
         });
@@ -123,9 +129,9 @@ app.post('/register', function(req, res) {
 app.get('/userinfo', function(req, res) {
     sess = req.session;
     if (sess.email) {
-    collection.count(function(err, count) {
+    users_collection.count(function(err, count) {
         if (err) console.log(err);
-        collection.findOne({
+        users_collection.findOne({
             "email": sess.email
         },function(err, item) {
             if (err) console.log(err);
@@ -135,5 +141,14 @@ app.get('/userinfo', function(req, res) {
 
     });
     }
+});
+app.post('/post_submit', function(req, res) {
+    sess = req.session;
+    console.log(req.body.post);
+    if (sess.email) {
+        posts_collection.insert({"user":sess.email,"post":req.body.post});
+    }
+
+
 });
 app.listen(3000);

@@ -7,3 +7,8 @@
 {
 	margin:0px !important;
 }
+.content
+{
+  position: relative;
+  overflow: hidden;
+}
