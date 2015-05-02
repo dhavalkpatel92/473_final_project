@@ -148,7 +148,13 @@ app.post('/post_submit', function(req, res) {
     if (sess.email) {
         posts_collection.insert({"user":sess.email,"post":req.body.post});
     }
-
-
+});
+app.get('/all_posts', function(req, res) {
+    if (sess.email) {
+        posts_collection.find().toArray(function(err, items) {
+        res.json(items);
+      });
+        //posts_collection.insert({"user":sess.email,"post":req.body.post});
+    }
 });
 app.listen(3000);

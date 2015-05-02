@@ -26,10 +26,7 @@ $(document).ready(function() {
 
 $(document).on("click","#add_post",function(e) {
   e.preventDefault();
-  //console.log("clicked on add post");
   $(".content-header h1").html("Add Post <small>Student or Professor can add post here</small>");
-  //$(".content-header h1 ").html("Student or Professor can add post here");
-
   $(".content").load("views/add_post.html");
 })
 
@@ -44,6 +41,24 @@ $(document).on("submit","#submit_post",function(e) {
          
         }
     });
-  //console.log(post);
+});
 
+$(document).on("click","#all_posts",function(e) {
+  e.preventDefault();
+  //var post=$("#post_text_area").val();
+  $(".content").html('');
+  $.ajax({
+        url: '/all_posts',
+        type: 'get',
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        success: function(result) {
+          //console.log(data);
+          result.forEach(function(post) {
+              $(".content-header h1").html("All Posts <small></small>");
+              $(".content").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>"+post.user+"</a></h3><div class='timeline-body'>"+post.post+"</div></div></li></ul>")
+              //console.log(entry.post);
+        });
+        }
+    });
 });
