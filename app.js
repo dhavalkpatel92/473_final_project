@@ -59,7 +59,7 @@ var sess;
 var html_dir = './public/';
 app.post('/login', function(req, res) {
 
-    console.log('Admin side log');
+    //console.log('Admin side log');
     //var logincheck_result=logincheck(obj,req,result);
     users_collection.count(function(err, count) {
         if (err) console.log(err);
@@ -106,7 +106,7 @@ app.get('/register', function(req, res) {
 
 });
 var users_collection = db.collection('users');
-var posts_collection =db.collection('posts');
+var posts_collection = db.collection('posts');
 
 app.post('/register', function(req, res) {
 
@@ -129,32 +129,55 @@ app.post('/register', function(req, res) {
 app.get('/userinfo', function(req, res) {
     sess = req.session;
     if (sess.email) {
-    users_collection.count(function(err, count) {
-        if (err) console.log(err);
-        users_collection.findOne({
-            "email": sess.email
-        },function(err, item) {
+        users_collection.count(function(err, count) {
             if (err) console.log(err);
+            users_collection.findOne({
+                "email": sess.email
+            }, function(err, item) {
+                if (err) console.log(err);
                 res.json(item);
-            
-        });
 
-    });
+            });
+
+        });
     }
 });
+
 app.post('/post_submit', function(req, res) {
     sess = req.session;
-    console.log(req.body.post);
+    //console.log(req.body.post);
     if (sess.email) {
-        posts_collection.insert({"user":sess.email,"post":req.body.post});
+        var post={"user": sess.email,"post": req.body.post};
+        posts_collection.insert(post);
+        res.json(post);
     }
 });
 app.get('/all_posts', function(req, res) {
-    if (sess.email) {
-        posts_collection.find().toArray(function(err, items) {
-        res.json(items);
-      });
-        //posts_collection.insert({"user":sess.email,"post":req.body.post});
-    }
+            if (sess.email) {
+                
+                posts_collection.find().toArray(function(err, items) {
+                        //var result=[{"user":"asdasdas","post":"asdasdasdqwqwe"}];
+                        /*
+                        items.forEach(function(post) {
+                                users_collection.findOne({
+                                    "email": post.user
+                                }, function(err,user) {
+                                    if (err) console.log(err);
+                                  });
+                            });
+                            //console.log(result);
+                            res.json(result);
+                        });
+                        */ 
+                        res.json(items);
+                    //posts_collection.insert({"user":sess.email,"post":req.body.post});
+                });
+            } 
 });
-app.listen(3000);
+io.on('connection', function(socket,req){
+    socket.on('send_post', function(data){
+        //console.log("In socket"+data);
+        io.emit('send_post',data)
+    });
+});
+server.listen(3000);
