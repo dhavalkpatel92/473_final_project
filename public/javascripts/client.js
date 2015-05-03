@@ -59,7 +59,8 @@ $(document).on("submit","#submit_post",function(e) {
         data:{"post":post},
         success: function(data) {
           noty_message('top','success','Post Added');
-          $(".content").hide().load("views/add_post.html").fadeIn(2000); 
+          
+          $(".content").html('').load("views/add_post.html").fadeIn(2000); 
           //$(".content").hide("slow");
           //$(".content").show("slow");
          socket.emit('send_post', data);
