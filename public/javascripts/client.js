@@ -20,7 +20,7 @@ $(document).ready(function() {
           $(".user_name").html(data.name);
           if(data.role==="professor")
           {
-            $(".sidebar-menu").html("<li class='header'>Professor</li><li class='active'><a href='#'><span>Dashboard</span></a></li><li><a href=''><span>Add Quiz</span></a></li>");
+            $(".sidebar-menu").html("<li class='header'>Professor</li><li class='active'><a href='#'><span>Dashboard</span></a></li><li><a href='' id='add_quiz'><span>Add Quiz</span></a></li>");
             //console.log("professor menu here");
           }
           else
@@ -35,35 +35,73 @@ $(document).ready(function() {
     });
 
 });
-
+var socket = io();
 $(document).on("click","#add_post",function(e) {
   e.preventDefault();
   $(".content-header h1").html("Add Post <small>Student or Professor can add post here</small>");
   $(".content").load("views/add_post.html");
 })
-var socket = io();
+
+$(document).on("click","#add_quiz",function(e) {
+  e.preventDefault();
+  $(".content-header h1").html("Add Quiz <small>Professor can add quiz here</small>");
+  $(".content").load("views/add_quiz.html");
+})
+var counter=2;
+$(document).on("click","#add_que",function(e) {
+  e.preventDefault();
+  $("#que_Area").append('<div id="que'+counter+'_div"><div class="form-group"><label>Enter Question</label><input type="text" id="que'+counter+'" class="form-control" placeholder="Question ..." required></div><div class="form-group"><label>Enter Answer Options</label><input type="text" id="que'+counter+'_options" class="form-control" placeholder="Options ..." required></div><div class="form-group"><label>Enter Correct Answer</label><input type="text" id="que'+counter+'_ans" class="form-control" placeholder="Answer ..." required></div></div><br/><br/>');
+  counter++;
+})
+$(document).on("click","#remove_que",function(e) {
+  e.preventDefault();
+  counter--;
+  $("#que"+counter+"_div").remove();
+})
+$(document).on("submit","#post_quiz",function(e) {
+  e.preventDefault();
+  var result=[];
+  var quiz_name=$("#quiz_name").val();
+  for(var i=1;i<counter;i++)
+  {
+    var que=$("#que"+i+"").val();
+    var options=$("#que"+i+"_options").val().split(',');
+    var c_ans=$("#que"+i+"_ans").val();
+    //var obj={"question:"que,"options":options,"answer":c_ans};
+    var obj={
+            "question": que,
+            "options": options,
+            "answer": c_ans
+        }
+    result.push(obj);
+  }
+  console.log(result);
+  var quiz_result={};
+  quiz_result[quiz_name]=result;
+  $.ajax({
+        url: '/post_new_quiz',
+        type: 'post',
+        contentType: 'application/json',
+        data: JSON.stringify(quiz_result),
+        //data:{result:result,quiz_name:quiz_name},
+        success: function(data) {
+
+        }
+    });
+})
+
+
 $(document).on("submit","#submit_post",function(e) {
   e.preventDefault();
   var post=$("#post_text_area").val();
-
-  
-  socket.on('send_post',function(data){
-        //console.log(data);
-        $(".content").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>"+post.user+"</a></h3><div class='timeline-body'>"+post.post+"</div></div></li></ul>");
-        //$("#info").append(data+"<br/>");
-    });
-  
   $.ajax({
         url: '/post_submit',
         type: 'post',
         data:{"post":post},
         success: function(data) {
           noty_message('top','success','Post Added');
-          
-          $(".content").html('').load("views/add_post.html").fadeIn(2000); 
-          //$(".content").hide("slow");
-          //$(".content").show("slow");
-         socket.emit('send_post', data);
+          socket.emit('send_post', data);
+          $(".content").html('').load("views/add_post.html").fadeIn(2000);
         }
     });
 
@@ -71,10 +109,6 @@ $(document).on("submit","#submit_post",function(e) {
 
 $(document).on("click","#all_posts",function(e) {
   e.preventDefault();
-  //var post=$("#post_text_area").val();
-  socket.on('send_',function(data){
-        $("#info").append(data+"<br/>");
-    });
   $(".content").html('');
   $.ajax({
         url: '/all_posts',

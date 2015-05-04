@@ -7,7 +7,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var Db = require('mongodb').Db,
     Server = require('mongodb').Server;
-
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
@@ -34,6 +34,9 @@ db.open(function(err, db) {
         });
     });
     db.createCollection('posts', function(err) {
+        if (err) console.log(err);
+    });
+    db.createCollection('quizzes', function(err) {
         if (err) console.log(err);
     });
 });
@@ -107,7 +110,7 @@ app.get('/register', function(req, res) {
 });
 var users_collection = db.collection('users');
 var posts_collection = db.collection('posts');
-
+var quizzes_collection = db.collection('quizzes');
 app.post('/register', function(req, res) {
 
     users_collection.count(function(err, count) {
@@ -173,6 +176,17 @@ app.get('/all_posts', function(req, res) {
                     //posts_collection.insert({"user":sess.email,"post":req.body.post});
                 });
             } 
+});
+app.post('/post_new_quiz', function(req, res) {
+    sess = req.session;
+    //console.log(req.body.post);
+    if (sess.email) {
+        console.log(req.body);
+        console.log(req.body.data);
+        //console.log(req.body.quiz_name)
+        quizzes_collection.insert(req.body);
+        //console.log(req.body);
+    }
 });
 io.on('connection', function(socket,req){
     socket.on('send_post', function(data){
