@@ -1,7 +1,6 @@
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var fs = require('fs');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
@@ -39,6 +38,9 @@ db.open(function(err, db) {
     db.createCollection('quizzes', function(err) {
         if (err) console.log(err);
     });
+    db.createCollection('quizzes_results', function(err) {
+        if (err) console.log(err);
+    });
 });
 
 app.get('/', function(req, res) {
@@ -62,8 +64,6 @@ var sess;
 var html_dir = './public/';
 app.post('/login', function(req, res) {
 
-    //console.log('Admin side log');
-    //var logincheck_result=logincheck(obj,req,result);
     users_collection.count(function(err, count) {
         if (err) console.log(err);
         users_collection.find({
@@ -111,6 +111,7 @@ app.get('/register', function(req, res) {
 var users_collection = db.collection('users');
 var posts_collection = db.collection('posts');
 var quizzes_collection = db.collection('quizzes');
+var quizzes_results_collection = db.collection('quizzes_results');
 app.post('/register', function(req, res) {
 
     users_collection.count(function(err, count) {
@@ -159,38 +160,28 @@ app.get('/all_posts', function(req, res) {
             if (sess.email) {
                 
                 posts_collection.find().toArray(function(err, items) {
-                        //var result=[{"user":"asdasdas","post":"asdasdasdqwqwe"}];
-                        /*
-                        items.forEach(function(post) {
-                                users_collection.findOne({
-                                    "email": post.user
-                                }, function(err,user) {
-                                    if (err) console.log(err);
-                                  });
-                            });
-                            //console.log(result);
-                            res.json(result);
-                        });
-                        */ 
                         res.json(items);
-                    //posts_collection.insert({"user":sess.email,"post":req.body.post});
-                });
+                     });
             } 
 });
 app.post('/post_new_quiz', function(req, res) {
     sess = req.session;
-    //console.log(req.body.post);
     if (sess.email) {
-        console.log(req.body);
-        console.log(req.body.data);
-        //console.log(req.body.quiz_name)
         quizzes_collection.insert(req.body);
-        //console.log(req.body);
+        res.send(req.body);
     }
+});
+app.get('/display_all_quizzes', function(req, res) {
+    sess = req.session;
+    if (sess.email) {
+        quizzes_collection.find().toArray(function(err, items) {
+            res.json(items);
+        });
+    }
+
 });
 io.on('connection', function(socket,req){
     socket.on('send_post', function(data){
-        //console.log("In socket"+data);
         io.emit('send_post',data)
     });
 });
