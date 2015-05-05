@@ -180,6 +180,17 @@ app.get('/display_all_quizzes', function(req, res) {
     }
 
 });
+app.post('/submit_quiz_option', function(req, res) {
+    sess = req.session;
+    if (sess.email) {
+        quizzes_collection.findOne({"quiz_name":req.body.quiz_id}, function(err, item) {
+                if (err) console.log(err);
+                res.json(item);
+
+            });
+        res.send(req.body);
+    }
+});
 io.on('connection', function(socket,req){
     socket.on('send_post', function(data){
         io.emit('send_post',data)

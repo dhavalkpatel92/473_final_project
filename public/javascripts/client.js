@@ -82,6 +82,7 @@ $(document).on("submit","#post_quiz",function(e) {
   }
   console.log(result);
   var quiz_result={};
+  quiz_result["quiz_name"]=quiz_name;
   quiz_result[quiz_name]=result;
   $.ajax({
         url: '/post_new_quiz',
@@ -105,27 +106,43 @@ $(document).on("click","#display_all_quizzes",function(e) {
         url: '/display_all_quizzes',
         type: 'get',
         success: function(result) {
-          $(".content").load("views/diplay_quiz_options.html");
+          //$(".content").load("views/diplay_quiz_options.html");
+          $(".content").load("Views/diplay_quiz_options.html",function(){
+          var i=1;
           jQuery.each( result, function( key, val ) {
             
             jQuery.each( val, function( key, val ) {
-              var i=1;
-              if(key != "_id")
+              
+              if(key == "quiz_name")
               {
-                console.log(key);
-                console.log(i);
-                $(".form-group").append('<label><input type="radio" name="quizradios" id="quizradios'+i+'" value="option'+i+'">'+key+'</label>');
+                //console.log(key);
+                //console.log(i);
+                $(".form-group").append('<div class="radio"><label><input type="radio" name="quizradios" id="quizradios'+i+'" value="'+val+'">'+val+'</label></div>');
                 i++;
-
               }
               
             });
+          });
           });
           //console.log(result);
         }
     });
   });
+$(document).on("submit","#submit_quiz_option",function(e) {
+  e.preventDefault();
+  var radio_val=$('input[name=quizradios]:checked', '#submit_quiz_option').val();
+  $.ajax({
+        url: '/submit_quiz_option',
+        type: 'post',
+        data:{"quiz_id":radio_val},
+        success: function(data) {
+          console.log(data);
+          //socket.emit('send_post', data);
+          //$(".content").html('').load("views/add_post.html").fadeIn(2000);
+        }
+    });
 
+});
 $(document).on("submit","#submit_post",function(e) {
   e.preventDefault();
   $(".sidebar-menu li").removeClass('active');
