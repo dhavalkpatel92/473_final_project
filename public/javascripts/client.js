@@ -115,8 +115,6 @@ $(document).on("click","#display_all_quizzes",function(e) {
               
               if(key == "quiz_name")
               {
-                //console.log(key);
-                //console.log(i);
                 $(".form-group").append('<div class="radio"><label><input type="radio" name="quizradios" id="quizradios'+i+'" value="'+val+'">'+val+'</label></div>');
                 i++;
               }
@@ -124,7 +122,6 @@ $(document).on("click","#display_all_quizzes",function(e) {
             });
           });
           });
-          //console.log(result);
         }
     });
   });
@@ -136,9 +133,30 @@ $(document).on("submit","#submit_quiz_option",function(e) {
         type: 'post',
         data:{"quiz_id":radio_val},
         success: function(data) {
-          console.log(data);
-          //socket.emit('send_post', data);
-          //$(".content").html('').load("views/add_post.html").fadeIn(2000);
+          //console.log(data[radio_val]);
+          
+          $(".content").load("Views/diplay_quiz_options.html",function(){
+              console.log(data[radio_val]);
+              $("#quiz_render_form").html('<div class="box-header"><h3 class="box-title">'+radio_val+'</h3></div><form action="" role="form" id="submit_quiz_questions"><div class="box-body"><div class="form-group"></div></div><div class="box-footer"><button type="submit" class="btn btn-primary">Submit</button></div></form>');
+              for(var i=0;i<data[radio_val].length;i++)
+              {
+
+               jQuery.each(data[radio_val][i], function( key, val ) {
+                  if(key=="question")
+                  {
+                    $("#submit_quiz_questions .form-group").append('<label>'+val+'</label>');
+                  }
+                  if(key=="options")
+                  {
+                    for(var j=0;j<data[radio_val][i]["options"].length;j++)
+                    {
+                      $("#submit_quiz_questions .form-group").append('<div class="radio"><label><input type="radio" name="quizradios" id="quizradios'+i+'" value="'+data[radio_val][i]["options"][j]+'">'+data[radio_val][i]["options"][j]+'</label></div>');
+                    }
+                  }
+              });
+              }
+          });
+
         }
     });
 

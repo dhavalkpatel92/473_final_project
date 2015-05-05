@@ -185,10 +185,10 @@ app.post('/submit_quiz_option', function(req, res) {
     if (sess.email) {
         quizzes_collection.findOne({"quiz_name":req.body.quiz_id}, function(err, item) {
                 if (err) console.log(err);
+                //console.log(item);
                 res.json(item);
 
             });
-        res.send(req.body);
     }
 });
 io.on('connection', function(socket,req){
