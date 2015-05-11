@@ -203,20 +203,25 @@ app.post('/submit_quiz', function(req, res) {
     var quizName=req.body.quiz_id;
     quizzes_collection.findOne({"quiz_name": quizName},function(err, quiz) {
         var quiz_ans=quizName+"_ans";
-        var counter=0;
+        
         quizzes_results_collection.findOne({"quiz_name": quizName},function(err, quizAns) {
             var answerA=req.body.answerA;
             var result_obj=[];
+            var total=0;
             for(var i=0;i<answerA.length;i++){
+                var counter=0;
                 if(answerA[i]==quiz[quiz_ans][i]){
-
-                    counter++;
+                    counter=1;
+                    total++;
                 }
+                result_obj.push(counter);
             }
-            
+            console.log();
+            res.send({"result_obj":result_obj,"total":total});
         });
     });
 });
+
 io.on('connection', function(socket, req) {
     socket.on('send_post', function(data) {
         io.emit('send_post', data)
