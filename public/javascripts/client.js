@@ -66,7 +66,8 @@ $(document).on("click","#remove_que",function(e) {
 $(document).on("submit","#post_quiz",function(e) {
   e.preventDefault();
   var result=[];
-  var quiz_name=$("#quiz_name").val();
+  var quiz_name=$("#quiz_name").val().replace(/\s+/g, '');
+  var answerA=[];
   for(var i=1;i<counter;i++)
   {
     var que=$("#que"+i+"").val();
@@ -75,15 +76,17 @@ $(document).on("submit","#post_quiz",function(e) {
     //var obj={"question:"que,"options":options,"answer":c_ans};
     var obj={
             "question": que,
-            "options": options,
-            "answer": c_ans
+            "options": options
         }
     result.push(obj);
+    answerA.push(c_ans);
   }
   console.log(result);
   var quiz_result={};
   quiz_result["quiz_name"]=quiz_name;
   quiz_result[quiz_name]=result;
+  var quiz_ans=quiz_name+"_ans";
+  quiz_result[quiz_ans]=answerA;
   $.ajax({
         url: '/post_new_quiz',
         type: 'post',
@@ -133,24 +136,20 @@ $(document).on("submit","#submit_quiz_option",function(e) {
         type: 'post',
         data:{"quiz_id":radio_val},
         success: function(data) {
-          //console.log(data[radio_val]);
-          
           $(".content").load("Views/diplay_quiz_options.html",function(){
-              console.log(data[radio_val]);
-              $("#quiz_render_form").html('<div class="box-header"><h3 class="box-title">'+radio_val+'</h3></div><form action="" role="form" id="submit_quiz_questions"><div class="box-body"><div class="form-group"></div></div><div class="box-footer"><button type="submit" class="btn btn-primary">Submit</button></div></form>');
-              for(var i=0;i<data[radio_val].length;i++)
+              $("#quiz_render_form").html('<div class="box-header"><h3 class="box-title">'+radio_val+'</h3></div><form action="" role="form" id="submit_quiz_questions"><input type="hidden" value="'+radio_val+'" id="quiz_name_hidden"><div class="box-body"><div class="form-group"></div></div><div class="box-footer"><button type="submit" class="btn btn-primary">Submit</button></div></form>');
+              for(var i=0;i<data.length;i++)
               {
-
-               jQuery.each(data[radio_val][i], function( key, val ) {
+                jQuery.each(data[i], function( key, val ) {
                   if(key=="question")
                   {
-                    $("#submit_quiz_questions .form-group").append('<label>'+val+'</label>');
+                      $("#submit_quiz_questions .form-group").append('<label>'+val+'</label>');
                   }
                   if(key=="options")
                   {
-                    for(var j=0;j<data[radio_val][i]["options"].length;j++)
+                    for(var j=0;j<data[i]["options"].length;j++)
                     {
-                      $("#submit_quiz_questions .form-group").append('<div class="radio"><label><input type="radio" name="quizradios" id="quizradios'+i+'" value="'+data[radio_val][i]["options"][j]+'">'+data[radio_val][i]["options"][j]+'</label></div>');
+                      $("#submit_quiz_questions .form-group").append('<div class="radio"><label><input type="radio" name="quizradios'+i+'" id="quizradios'+i+'" value="'+data[i]["options"][j]+'">'+data[i]["options"][j]+'</label></div>');
                     }
                   }
               });
@@ -161,6 +160,24 @@ $(document).on("submit","#submit_quiz_option",function(e) {
     });
 
 });
+$(document).on("submit","#submit_quiz_questions",function(e) {
+  e.preventDefault();
+  var quiz_ID=$("#quiz_name_hidden").val();
+  var ans=[];
+  $('input[type="radio"]:checked').each(function() {
+      ans.push(this.value);
+  });
+  $.ajax({
+        url: '/submit_quiz',
+        type: 'post',
+        contentType: 'application/json',
+        data: JSON.stringify({"quiz_id":quiz_ID,"answerA":ans}),
+        success: function(data) {
+          
+        }
+      });
+});
+
 $(document).on("submit","#submit_post",function(e) {
   e.preventDefault();
   $(".sidebar-menu li").removeClass('active');

@@ -112,6 +112,7 @@ var users_collection = db.collection('users');
 var posts_collection = db.collection('posts');
 var quizzes_collection = db.collection('quizzes');
 var quizzes_results_collection = db.collection('quizzes_results');
+
 app.post('/register', function(req, res) {
 
     users_collection.count(function(err, count) {
@@ -151,23 +152,28 @@ app.post('/post_submit', function(req, res) {
     sess = req.session;
     //console.log(req.body.post);
     if (sess.email) {
-        var post={"user": sess.email,"post": req.body.post};
+        var post = {
+            "user": sess.email,
+            "post": req.body.post
+        };
         posts_collection.insert(post);
         res.json(post);
     }
 });
 app.get('/all_posts', function(req, res) {
-            if (sess.email) {
-                
-                posts_collection.find().toArray(function(err, items) {
-                        res.json(items);
-                     });
-            } 
+    if (sess.email) {
+        posts_collection.find().toArray(function(err, items) {
+            res.json(items);
+        });
+    }
 });
 app.post('/post_new_quiz', function(req, res) {
     sess = req.session;
     if (sess.email) {
         quizzes_collection.insert(req.body);
+        var quiz_name=req.body.quiz_name;
+        var obj={quiz_name:quiz_name,quiz_result:[]};
+        quizzes_results_collection.insert(obj);
         res.send(req.body);
     }
 });
@@ -183,17 +189,37 @@ app.get('/display_all_quizzes', function(req, res) {
 app.post('/submit_quiz_option', function(req, res) {
     sess = req.session;
     if (sess.email) {
-        quizzes_collection.findOne({"quiz_name":req.body.quiz_id}, function(err, item) {
-                if (err) console.log(err);
-                //console.log(item);
-                res.json(item);
+        quizzes_collection.findOne({
+            "quiz_name": req.body.quiz_id
+        }, function(err, item) {
+            if (err) console.log(err);
+            res.json(item[req.body.quiz_id]);
 
-            });
+        });
     }
 });
-io.on('connection', function(socket,req){
-    socket.on('send_post', function(data){
-        io.emit('send_post',data)
+app.post('/submit_quiz', function(req, res) {
+    sess = req.session;
+    var quizName=req.body.quiz_id;
+    quizzes_collection.findOne({"quiz_name": quizName},function(err, quiz) {
+        var quiz_ans=quizName+"_ans";
+        var counter=0;
+        quizzes_results_collection.findOne({"quiz_name": quizName},function(err, quizAns) {
+            var answerA=req.body.answerA;
+            var result_obj=[];
+            for(var i=0;i<answerA.length;i++){
+                if(answerA[i]==quiz[quiz_ans][i]){
+
+                    counter++;
+                }
+            }
+            
+        });
+    });
+});
+io.on('connection', function(socket, req) {
+    socket.on('send_post', function(data) {
+        io.emit('send_post', data)
     });
 });
 server.listen(3000);
