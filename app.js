@@ -198,20 +198,7 @@ app.get('/display_all_quizzes', function(req, res) {
     if (sess.email) {
         //var quizzes_obj=[];
         quizzes_collection.find().toArray(function(err, items) {
-            /*
-            for (var i = 0; i < items.length; i++) {
-                quizzes_results_collection.findOne({
-                        "quiz_name": items[i].quiz_name,
-                        "email":sess.email
-                    }, function(err, item) {
-                        if (err) {
-                            console.log(err);
-                        }else{
-                            quizzes_obj.push(item.quiz_name);
-                        }
-                    });
-            };
-            */
+            
             res.json(items);
             //console.log(quizzes_obj);
         });
@@ -258,29 +245,6 @@ app.post('/submit_quiz', function(req, res) {
                     }
                     result_obj.push(counter);
                 }
-                /*
-                function quiz_que_chart(quizName){
-                
-                que_results_collection.findOne({
-                     "quiz_name": quizName
-                }, function(err, quiz_ques) {
-                    var final_obj=[];
-                    for (var i = 0; i < quiz_ques.length; i++) {
-                        console.log("result obj is"+result_obj);
-                        console.log("que obj 1st "+quiz_ques[i]);
-                        final_obj.push(result_obj[i]+quiz_ques[i]);
-                    };
-                    console.log(final_obj);
-                    return final_obj;
-                });
-                    //console.log(final_obj);
-                   
-
-                }
-
-                var f_obj=quiz_que_chart(quizName);
-                console.log("final obj is"+f_obj);
-                */
                 res.send({
                     "result_obj": result_obj,
                     "total": total
@@ -295,30 +259,38 @@ app.post('/submit_quiz', function(req, res) {
 app.post('/add_result_chart', function(req, res) {
     sess = req.session;
     if (sess.email) {
-        
+
         que_results_collection.findOne({
             "quiz_name": req.body.quiz_id
         }, function(err, quiz_ques_rslts) {
-            result_obj=req.body.data;
-            final_obj=[];
+            result_obj = req.body.data;
+            final_obj = [];
             //console.log("found object"+quiz_ques_rslts["quiz_ans"]);
             for (var i = 0; i < quiz_ques_rslts["quiz_ans"].length; i++) {
-                        var temp=Number(result_obj[i])+Number(quiz_ques_rslts["quiz_ans"][i]);
-                        final_obj.push(result_obj[i]+quiz_ques_rslts["quiz_ans"][i]);
+                var temp = Number(result_obj[i]) + Number(quiz_ques_rslts["quiz_ans"][i]);
+                final_obj.push(result_obj[i] + quiz_ques_rslts["quiz_ans"][i]);
             };
-            que_results_collection.update({"quiz_name": req.body.quiz_id},{$set: {quiz_ans:final_obj}});
+            que_results_collection.update({
+                "quiz_name": req.body.quiz_id
+            }, {
+                $set: {
+                    quiz_ans: final_obj
+                }
+            });
         });
         que_results_collection.find().toArray(function(err, items) {
-                res.json(items);
-            });
-       
+            res.json(items);
+        });
+
     }
 
 });
 app.get('/all_quiz_results', function(req, res) {
     sess = req.session;
     if (sess.email) {
-       
+        que_results_collection.find().toArray(function(err, items) {
+            res.json(items);
+        });
     }
 
 });
@@ -327,8 +299,7 @@ io.on('connection', function(socket, req) {
         io.emit('send_post', data);
     });
     socket.on('send_que_rslt_chart', function(data) {
-        if(data=="success")
-        {
+        if (data == "success") {
             console.log("working inside node");
             que_results_collection.find().toArray(function(err, items) {
                 io.emit('send_que_rslt_chart', items);

@@ -196,7 +196,7 @@ $(document).on("submit", "#submit_quiz_questions", function(e) {
                 noty_message('top', 'error', 'Already given.Cannot do again');
             } else {
                 noty_message('top', 'success', 'Quiz Submitted..You got   ' + data.total);
-                var quiz_rslt_obj=data.result_obj;
+                var quiz_rslt_obj = data.result_obj;
                 console.log(quiz_rslt_obj);
                 $.ajax({
                     url: '/add_result_chart',
@@ -261,7 +261,7 @@ $(document).on("click", "#prof_dashboard", function(e) {
     e.preventDefault();
     $(".sidebar-menu li").removeClass('active');
     $(this).parent().addClass('active');
-    $(".content").html('');
+    $(".content").html('<div id="prof_chart"></div>');
     //chart_init("canvas",["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"],[23,45,67,89,12]);
 
     $.ajax({
@@ -271,8 +271,8 @@ $(document).on("click", "#prof_dashboard", function(e) {
         contentType: "application/json; charset=utf-8",
         success: function(data) {
             for (var i = 0; i < data.length; i++) {
-                $(".content").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
-                $(".content").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');
+                $("#prof_chart").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
+                $("#prof_chart").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');
                 chart_init("canvas_" + data[i]["quiz_name"], data[i]["quiz_que"], data[i]["quiz_ans"]);
             }
         }
@@ -282,10 +282,10 @@ socket.on('send_post', function(data) {
     $(".content .div_timeline").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>" + data.user + "</a></h3><div class='timeline-body'>" + data.post + "</div></div></li></ul>");
 });
 socket.on('send_que_rslt_chart', function(data) {
-    console.log("data through socket"+data);
+    console.log("data through socket" + data);
     for (var i = 0; i < data.length; i++) {
-                $(".content").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
-                $(".content").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');
-                chart_init("canvas_" + data[i]["quiz_name"], data[i]["quiz_que"], data[i]["quiz_ans"]);
-            }
+        $("#prof_chart").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
+        $("#prof_chart").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');
+        chart_init("canvas_" + data[i]["quiz_name"], data[i]["quiz_que"], data[i]["quiz_ans"]);
+    }
 });
