@@ -207,7 +207,7 @@ $(document).on("submit", "#submit_quiz_questions", function(e) {
                         "quiz_id": quiz_ID
                     }),
                     success: function(data) {
-
+                        socket.emit('send_que_rslt_chart', "success");
                     }
                 });
             }
@@ -280,4 +280,12 @@ $(document).on("click", "#prof_dashboard", function(e) {
 });
 socket.on('send_post', function(data) {
     $(".content .div_timeline").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>" + data.user + "</a></h3><div class='timeline-body'>" + data.post + "</div></div></li></ul>");
+});
+socket.on('send_que_rslt_chart', function(data) {
+    console.log("data through socket"+data);
+    for (var i = 0; i < data.length; i++) {
+                $(".content").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
+                $(".content").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');
+                chart_init("canvas_" + data[i]["quiz_name"], data[i]["quiz_que"], data[i]["quiz_ans"]);
+            }
 });
