@@ -13,7 +13,7 @@ function noty_message(layout, type, text) {
 
 function chart_init(id, questions, answers) {
     var randomScalingFactor = function() {
-        return Math.round(Math.random() * 1000)
+        return Math.round(Math.random() * 1000);
     };
     var ctx = $("#" + id).get(0).getContext("2d");
 
@@ -26,7 +26,7 @@ function chart_init(id, questions, answers) {
             highlightStroke: "rgba(151,187,205,1)",
             data: answers
         }]
-    }
+    };
 
     var myNewChart = new Chart(ctx).Bar(data, {
         responsive: true
@@ -61,7 +61,7 @@ $(document).on("click", "#add_post", function(e) {
     $(this).parent().addClass('active');
     $(".content-header h1").html("Add Post <small>Student or Professor can add post here</small>");
     $(".content").load("views/add_post.html");
-})
+});
 var counter;
 $(document).on("click", "#add_quiz", function(e) {
     $(".sidebar-menu li").removeClass('active');
@@ -70,18 +70,18 @@ $(document).on("click", "#add_quiz", function(e) {
     e.preventDefault();
     $(".content-header h1").html("Add Quiz <small>Professor can add quiz here</small>");
     $(".content").load("views/add_quiz.html");
-})
+});
 
 $(document).on("click", "#add_que", function(e) {
     e.preventDefault();
     $("#que_Area").append('<div id="que' + counter + '_div"><div class="form-group"><label>Enter Question</label><input type="text" id="que' + counter + '" class="form-control" placeholder="Question ..." required></div><div class="form-group"><label>Enter Answer Options</label><input type="text" id="que' + counter + '_options" class="form-control" placeholder="Options ..." required></div><div class="form-group"><label>Enter Correct Answer</label><input type="text" id="que' + counter + '_ans" class="form-control" placeholder="Answer ..." required></div></div><br/><br/>');
     counter++;
-})
+});
 $(document).on("click", "#remove_que", function(e) {
     e.preventDefault();
     counter--;
     $("#que" + counter + "_div").remove();
-})
+});
 $(document).on("submit", "#post_quiz", function(e) {
     e.preventDefault();
     var result = [];
@@ -95,7 +95,7 @@ $(document).on("submit", "#post_quiz", function(e) {
         var obj = {
             "question": que,
             "options": options
-        }
+        };
         result.push(obj);
         answerA.push(c_ans);
     }
@@ -118,7 +118,7 @@ $(document).on("submit", "#post_quiz", function(e) {
             $(".content").html('');
         }
     });
-})
+});
 $(document).on("click", "#display_all_quizzes", function(e) {
     e.preventDefault();
     $(".sidebar-menu li").removeClass('active');
@@ -207,6 +207,7 @@ $(document).on("submit", "#submit_quiz_questions", function(e) {
                         "quiz_id": quiz_ID
                     }),
                     success: function(data) {
+                        console.log(data);
                         socket.emit('send_que_rslt_chart', "success");
                     }
                 });
@@ -252,7 +253,7 @@ $(document).on("click", "#all_posts", function(e) {
             //console.log(data);
             result.forEach(function(post) {
                 $(".content-header h1").html("All Posts <small></small>");
-                $(".content .div_timeline").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>" + post.user + "</a></h3><div class='timeline-body'>" + post.post + "</div></div></li></ul>")
+                $(".content .div_timeline").append("<ul class='timeline'><li><div class='timeline-item'><h3 class='timeline-header'><a href='#'>" + post.user + "</a></h3><div class='timeline-body'>" + post.post + "</div></div></li></ul>");
             });
         }
     });
@@ -283,6 +284,7 @@ socket.on('send_post', function(data) {
 });
 socket.on('send_que_rslt_chart', function(data) {
     console.log("data through socket" + data);
+     $("#prof_chart").html('');
     for (var i = 0; i < data.length; i++) {
         $("#prof_chart").append('<h2 class="page-header">' + data[i]["quiz_name"] + '</h2>');
         $("#prof_chart").append('<canvas id="canvas_' + data[i]["quiz_name"] + '" height="250" width="400"></canvas>');

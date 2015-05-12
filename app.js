@@ -85,7 +85,7 @@ app.post('/login', function(req, res) {
         });
 
     });
-})
+});
 
 app.get('/home', function(req, res) {
     sess = req.session;
@@ -169,6 +169,7 @@ app.post('/post_submit', function(req, res) {
 app.get('/all_posts', function(req, res) {
     if (sess.email) {
         posts_collection.find().toArray(function(err, items) {
+          if (err) console.log(err);
             res.json(items);
         });
     }
@@ -184,7 +185,7 @@ app.post('/post_new_quiz', function(req, res) {
         for (var i = 0; i < quiz_obj.length; i++) {
             quiz_que.push(quiz_obj[i].question);
             quiz_ans.push(0);
-        };
+        }
         que_results_collection.insert({
             quiz_name: quizname,
             quiz_que: quiz_que,
@@ -198,7 +199,7 @@ app.get('/display_all_quizzes', function(req, res) {
     if (sess.email) {
         //var quizzes_obj=[];
         quizzes_collection.find().toArray(function(err, items) {
-            
+            if (err) console.log(err);
             res.json(items);
             //console.log(quizzes_obj);
         });
@@ -223,12 +224,14 @@ app.post('/submit_quiz', function(req, res) {
     quizzes_collection.findOne({
         "quiz_name": quizName
     }, function(err, quiz) {
+      if (err) console.log(err);
         var quiz_ans = quizName + "_ans";
         quizzes_results_collection.findOne({
             email: sess.email,
             quiz_name: quizName
         }, function(err, item) {
-            if (item == null) {
+          if (err) console.log(err);
+            if (item === null) {
                 quizzes_results_collection.insert({
                     email: sess.email,
                     quiz_name: quizName,
@@ -263,13 +266,15 @@ app.post('/add_result_chart', function(req, res) {
         que_results_collection.findOne({
             "quiz_name": req.body.quiz_id
         }, function(err, quiz_ques_rslts) {
+          if (err) console.log(err);
             result_obj = req.body.data;
             final_obj = [];
             //console.log("found object"+quiz_ques_rslts["quiz_ans"]);
             for (var i = 0; i < quiz_ques_rslts["quiz_ans"].length; i++) {
-                var temp = Number(result_obj[i]) + Number(quiz_ques_rslts["quiz_ans"][i]);
+                //var temp = Number(result_obj[i]) + Number(quiz_ques_rslts["quiz_ans"][i]);
                 final_obj.push(result_obj[i] + quiz_ques_rslts["quiz_ans"][i]);
-            };
+            }
+            console.log(final_obj);
             que_results_collection.update({
                 "quiz_name": req.body.quiz_id
             }, {
@@ -279,6 +284,7 @@ app.post('/add_result_chart', function(req, res) {
             });
         });
         que_results_collection.find().toArray(function(err, items) {
+          if (err) console.log(err);
             res.json(items);
         });
 
@@ -289,6 +295,7 @@ app.get('/all_quiz_results', function(req, res) {
     sess = req.session;
     if (sess.email) {
         que_results_collection.find().toArray(function(err, items) {
+          if (err) console.log(err);
             res.json(items);
         });
     }
@@ -302,6 +309,7 @@ io.on('connection', function(socket, req) {
         if (data == "success") {
             console.log("working inside node");
             que_results_collection.find().toArray(function(err, items) {
+              if (err) console.log(err);
                 io.emit('send_que_rslt_chart', items);
             });
         }
