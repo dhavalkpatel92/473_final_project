@@ -115,7 +115,7 @@ var users_collection = db.collection('users');
 var posts_collection = db.collection('posts');
 var quizzes_collection = db.collection('quizzes');
 var quizzes_results_collection = db.collection('quizzes_results');
-var que_results=db.collection('que_results');
+var que_results_collection = db.collection('que_results');
 
 app.post('/register', function(req, res) {
 
@@ -177,6 +177,19 @@ app.post('/post_new_quiz', function(req, res) {
     sess = req.session;
     if (sess.email) {
         quizzes_collection.insert(req.body);
+        var quizname = req.body.quiz_name;
+        var quiz_obj = req.body[quizname];
+        var quiz_que = [];
+        var quiz_ans = [];
+        for (var i = 0; i < quiz_obj.length; i++) {
+            quiz_que.push(quiz_obj[i].question);
+            quiz_ans.push(0);
+        };
+        que_results_collection.insert({
+            quiz_name: quizname,
+            quiz_que: quiz_que,
+            quiz_ans: quiz_ans
+        });
         res.send(req.body);
     }
 });
@@ -219,36 +232,89 @@ app.post('/submit_quiz_option', function(req, res) {
 });
 app.post('/submit_quiz', function(req, res) {
     sess = req.session;
-    var quizName=req.body.quiz_id;
-    quizzes_collection.findOne({"quiz_name": quizName},function(err, quiz) {
-        var quiz_ans=quizName+"_ans";
-        quizzes_results_collection.findOne({email:sess.email,quiz_name:quizName},function(err, item) {
-            //console.log(quiz);
-            if(item==null){
-                quizzes_results_collection.insert({email:sess.email,quiz_name:quizName,result:req.body.answerA});
-                var answerA=req.body.answerA;
-            var result_obj=[];
-            var total=0;
-            for(var i=0;i<answerA.length;i++){
-                var counter=0;
-                if(answerA[i]==quiz[quiz_ans][i]){
-                    counter=1;
-                    total++;
+    var quizName = req.body.quiz_id;
+    quizzes_collection.findOne({
+        "quiz_name": quizName
+    }, function(err, quiz) {
+        var quiz_ans = quizName + "_ans";
+        quizzes_results_collection.findOne({
+            email: sess.email,
+            quiz_name: quizName
+        }, function(err, item) {
+            if (item == null) {
+                quizzes_results_collection.insert({
+                    email: sess.email,
+                    quiz_name: quizName,
+                    result: req.body.answerA
+                });
+                var answerA = req.body.answerA;
+                var result_obj = [];
+                var total = 0;
+                for (var i = 0; i < answerA.length; i++) {
+                    var counter = 0;
+                    if (answerA[i] == quiz[quiz_ans][i]) {
+                        counter = 1;
+                        total++;
+                    }
+                    result_obj.push(counter);
                 }
-                result_obj.push(counter);
-            }
-            res.send({"result_obj":result_obj,"total":total});
-            }else{
+                /*
+                function quiz_que_chart(quizName){
+                
+                que_results_collection.findOne({
+                     "quiz_name": quizName
+                }, function(err, quiz_ques) {
+                    var final_obj=[];
+                    for (var i = 0; i < quiz_ques.length; i++) {
+                        console.log("result obj is"+result_obj);
+                        console.log("que obj 1st "+quiz_ques[i]);
+                        final_obj.push(result_obj[i]+quiz_ques[i]);
+                    };
+                    console.log(final_obj);
+                    return final_obj;
+                });
+                    //console.log(final_obj);
+                   
+
+                }
+
+                var f_obj=quiz_que_chart(quizName);
+                console.log("final obj is"+f_obj);
+                */
+                res.send({
+                    "result_obj": result_obj,
+                    "total": total
+                });
+            } else {
                 res.send("error");
             }
 
         });
-        //quizzes_results_collection.findOne({"quiz_name": quizName},function(err, quizAns) {
-            
-        //});
     });
 });
+app.post('/add_result_chart', function(req, res) {
+    sess = req.session;
+    if (sess.email) {
+        que_results_collection.findOne({
+            "quiz_name": quizName
+        }, function(err, quiz_ques_rslts) {
+            for (var i = 0; i < quiz_ques_rslts.length; i++) {
+                        final_obj.push(result_obj[i]+quiz_ques_rslts[i]);
+            };
 
+        });
+    }
+
+});
+app.get('/all_quiz_results', function(req, res) {
+    sess = req.session;
+    if (sess.email) {
+        que_results_collection.find().toArray(function(err, items) {
+            res.json(items);
+        });
+    }
+
+});
 io.on('connection', function(socket, req) {
     socket.on('send_post', function(data) {
         io.emit('send_post', data)
