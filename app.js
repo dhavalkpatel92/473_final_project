@@ -15,7 +15,7 @@ app.use(session({
     saveUninitialized: true,
     resave: true
 }));
-var db = new Db('project_2', new Server('localhost', 27017));
+var db = new Db('test_center', new Server('localhost', 27017));
 // Establish connection to db
 db.open(function(err, db) {
     if (err) console.log(err);
@@ -39,6 +39,9 @@ db.open(function(err, db) {
         if (err) console.log(err);
     });
     db.createCollection('quizzes_results', function(err) {
+        if (err) console.log(err);
+    });
+    db.createCollection('que_results', function(err) {
         if (err) console.log(err);
     });
 });
@@ -112,6 +115,7 @@ var users_collection = db.collection('users');
 var posts_collection = db.collection('posts');
 var quizzes_collection = db.collection('quizzes');
 var quizzes_results_collection = db.collection('quizzes_results');
+var que_results=db.collection('que_results');
 
 app.post('/register', function(req, res) {
 
@@ -131,6 +135,7 @@ app.post('/register', function(req, res) {
 
     });
 });
+
 app.get('/userinfo', function(req, res) {
     sess = req.session;
     if (sess.email) {
@@ -160,6 +165,7 @@ app.post('/post_submit', function(req, res) {
         res.json(post);
     }
 });
+
 app.get('/all_posts', function(req, res) {
     if (sess.email) {
         posts_collection.find().toArray(function(err, items) {
@@ -171,17 +177,30 @@ app.post('/post_new_quiz', function(req, res) {
     sess = req.session;
     if (sess.email) {
         quizzes_collection.insert(req.body);
-        var quiz_name=req.body.quiz_name;
-        var obj={quiz_name:quiz_name,quiz_result:[]};
-        quizzes_results_collection.insert(obj);
         res.send(req.body);
     }
 });
 app.get('/display_all_quizzes', function(req, res) {
     sess = req.session;
     if (sess.email) {
+        //var quizzes_obj=[];
         quizzes_collection.find().toArray(function(err, items) {
+            /*
+            for (var i = 0; i < items.length; i++) {
+                quizzes_results_collection.findOne({
+                        "quiz_name": items[i].quiz_name,
+                        "email":sess.email
+                    }, function(err, item) {
+                        if (err) {
+                            console.log(err);
+                        }else{
+                            quizzes_obj.push(item.quiz_name);
+                        }
+                    });
+            };
+            */
             res.json(items);
+            //console.log(quizzes_obj);
         });
     }
 
@@ -203,9 +222,11 @@ app.post('/submit_quiz', function(req, res) {
     var quizName=req.body.quiz_id;
     quizzes_collection.findOne({"quiz_name": quizName},function(err, quiz) {
         var quiz_ans=quizName+"_ans";
-        
-        quizzes_results_collection.findOne({"quiz_name": quizName},function(err, quizAns) {
-            var answerA=req.body.answerA;
+        quizzes_results_collection.findOne({email:sess.email,quiz_name:quizName},function(err, item) {
+            //console.log(quiz);
+            if(item==null){
+                quizzes_results_collection.insert({email:sess.email,quiz_name:quizName,result:req.body.answerA});
+                var answerA=req.body.answerA;
             var result_obj=[];
             var total=0;
             for(var i=0;i<answerA.length;i++){
@@ -217,7 +238,14 @@ app.post('/submit_quiz', function(req, res) {
                 result_obj.push(counter);
             }
             res.send({"result_obj":result_obj,"total":total});
+            }else{
+                res.send("error");
+            }
+
         });
+        //quizzes_results_collection.findOne({"quiz_name": quizName},function(err, quizAns) {
+            
+        //});
     });
 });
 

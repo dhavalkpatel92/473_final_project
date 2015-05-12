@@ -116,7 +116,7 @@ $(document).on("submit","#post_quiz",function(e) {
         //data:{result:result,quiz_name:quiz_name},
         success: function(data) {
               noty_message('top','success','Quiz Added');
-              alert(data);
+              //alert(data);
               socket.emit('send_quiz', data);
               $(".content").html('');
         }
@@ -195,8 +195,11 @@ $(document).on("submit","#submit_quiz_questions",function(e) {
         contentType: 'application/json',
         data: JSON.stringify({"quiz_id":quiz_ID,"answerA":ans}),
         success: function(data) {
+          if(data=="error"){
+          noty_message('top','error','Already given.Cannot do again');
+          }else{
           noty_message('top','success','Quiz Submitted..You got   '+data.total);
-          $('.content').html('');
+          }$('.content').html('');
         }
       });
 });
@@ -262,7 +265,7 @@ $(document).on("click","#prof_dashboard",function(e) {
                   {
                     jQuery.each(val, function( key1, val1 ) {
                       questionA.push(val1.question);
-                      question_resultA.push(Math.floor(Math.random() * (10 - 0)) + 0);
+                      question_resultA.push(0);
                     });
                     
                   }
