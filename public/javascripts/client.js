@@ -262,7 +262,7 @@ $(document).on("click","#prof_dashboard",function(e) {
                   {
                     jQuery.each(val, function( key1, val1 ) {
                       questionA.push(val1.question);
-                      question_resultA.push(0);
+                      question_resultA.push(Math.floor(Math.random() * (10 - 0)) + 0);
                     });
                     
                   }

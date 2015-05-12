@@ -216,7 +216,6 @@ app.post('/submit_quiz', function(req, res) {
                 }
                 result_obj.push(counter);
             }
-            console.log();
             res.send({"result_obj":result_obj,"total":total});
         });
     });
